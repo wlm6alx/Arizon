@@ -8,9 +8,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
   validateMethod,
-  validateContentType
+  validateContentType,
+  getValidatedData
 } from '@/lib/middleware'
-import { registerSchema } from '@/lib/validations'
+import { registerSchema, type RegisterData } from '@/lib/validations'
 
 async function handleSignup(request: NextRequest) {
   // Validate HTTP method
@@ -22,8 +23,8 @@ async function handleSignup(request: NextRequest) {
   if (contentTypeError) return contentTypeError
 
   try {
-    // Get request body
-    const body = await request.json()
+    // Get pre-validated body from middleware using central utility
+    const body = getValidatedData<RegisterData>(request)
 
     // Register user
     const result = await registerUser(body)

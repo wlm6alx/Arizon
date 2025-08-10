@@ -15,11 +15,16 @@ export const registerSchema = z.object({
     .optional(),
 })
 
+// Type exports for TypeScript
+export type RegisterData = z.infer<typeof registerSchema>
+
 // User login schema
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 })
+
+export type LoginData = z.infer<typeof loginSchema>
 
 // Password reset request schema
 export const passwordResetRequestSchema = z.object({
@@ -52,6 +57,8 @@ export const profileUpdateSchema = z.object({
   country: z.string().max(100, 'Country must be less than 100 characters').optional(),
   timezone: z.string().max(50, 'Timezone must be less than 50 characters').optional(),
 })
+
+export type ProfileUpdateData = z.infer<typeof profileUpdateSchema>
 
 // User management schema (for admin updates)
 export const userUpdateSchema = z.object({

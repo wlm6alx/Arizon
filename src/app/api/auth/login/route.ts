@@ -8,9 +8,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
   validateMethod,
-  validateContentType
+  validateContentType,
+  getValidatedData
 } from '@/lib/middleware'
-import { loginSchema } from '@/lib/validations'
+import { loginSchema, type LoginData } from '@/lib/validations'
 
 async function handleLogin(request: NextRequest) {
   // Validate HTTP method
@@ -22,8 +23,8 @@ async function handleLogin(request: NextRequest) {
   if (contentTypeError) return contentTypeError
 
   try {
-    // Get request body
-    const body = await request.json()
+    // Get pre-validated body from middleware using central utility
+    const body = getValidatedData<LoginData>(request)
 
     // Login user
     const result = await loginUser(body)

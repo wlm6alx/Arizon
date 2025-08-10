@@ -9,9 +9,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
   validateMethod,
-  validateContentType
+  validateContentType,
+  getValidatedData
 } from '@/lib/middleware'
-import { profileUpdateSchema } from '@/lib/validations'
+import { profileUpdateSchema, type ProfileUpdateData } from '@/lib/validations'
 
 async function handleGetProfile(request: NextRequest) {
   try {
@@ -135,8 +136,8 @@ async function handleUpdateProfile(request: NextRequest) {
       )
     }
 
-    // Get request body
-    const body = await request.json()
+    // Get pre-validated body from middleware using central utility
+    const body = getValidatedData<ProfileUpdateData>(request)
 
     // Update user profile
     const updatedUser = await prisma.user.update({

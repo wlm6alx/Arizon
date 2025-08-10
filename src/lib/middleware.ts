@@ -227,6 +227,21 @@ export function composeMiddleware(...middlewares: MiddlewareHandler[]): Middlewa
   }
 }
 
+// Helper function to get validated request data from middleware
+export function getValidatedData<T = unknown>(request: NextRequest): T {
+  const validatedData = (request as any).validatedData
+  if (validatedData === undefined) {
+    throw new Error('No validated data found. Make sure to use validateRequestMiddleware before calling getValidatedData.')
+  }
+  return validatedData as T
+}
+
+// Helper function to safely get validated data (returns null if not found)
+export function getValidatedDataSafe<T = unknown>(request: NextRequest): T | null {
+  const validatedData = (request as any).validatedData
+  return validatedData !== undefined ? (validatedData as T) : null
+}
+
 // API route wrapper with middleware support
 export function withMiddleware(
   handler: APIHandler,
