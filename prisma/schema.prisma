@@ -1,0 +1,284 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and user management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?  @unique
+  firstName String?
+  lastName  String?
+  avatar    String?
+  phone     String?
+  
+  // Authentication fields
+  password  String
+  emailVerified DateTime?
+  isActive  Boolean  @default(true)
+  
+  // Profile fields
+  bio       String?
+  address   String?
+  city      String?
+  country   String?
+  timezone  String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLoginAt DateTime?
+  
+  // Relations
+  posts     Post[]
+  sessions  Session[]
+  userRoles UserRole[]
+  
+  @@map("users")
+}
+
+// Session model for user sessions
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+// Post model for content management
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  content     String?
+  excerpt     String?
+  slug        String   @unique
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  
+  // Relations
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories  PostCategory[]
+  tags        PostTag[]
+  
+  @@map("posts")
+}
+
+// Category model
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  posts       PostCategory[]
+  
+  @@map("categories")
+}
+
+// Tag model
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  color     String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  posts     PostTag[]
+  
+  @@map("tags")
+}
+
+// Junction table for Post-Category many-to-many relationship
+model PostCategory {
+  id         String   @id @default(cuid())
+  postId     String
+  categoryId String
+  
+  // Relations
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, categoryId])
+  @@map("post_categories")
+}
+
+// Junction table for Post-Tag many-to-many relationship
+model PostTag {
+  id     String @id @default(cuid())
+  postId String
+  tagId  String
+  
+  // Relations
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, tagId])
+  @@map("post_tags")
+}
+
+// Email template model for email services
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  htmlContent String
+  textContent String?
+  variables   Json?    // Store template variables as JSON
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("email_templates")
+}
+
+// Email log model to track sent emails
+model EmailLog {
+  id          String   @id @default(cuid())
+  to          String
+  from        String
+  subject     String
+  templateId  String?
+  status      EmailStatus @default(PENDING)
+  error       String?
+  sentAt      DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("email_logs")
+}
+
+// Enum for email status
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  BOUNCED
+}
+
+// Enum for user roles
+enum RoleType {
+  ADMIN
+  BUSINESS
+  SUPPLIER
+  STOCK_MANAGER
+  CLIENT
+  COMMAND_MANAGER
+  DELIVERY_DRIVER
+}
+
+// Role model for defining system roles
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  type        RoleType @unique
+  description String?
+  color       String?
+  
+  // Role configuration
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  userRoles   UserRole[]
+  permissions RolePermission[]
+  
+  @@map("roles")
+}
+
+// Junction table for User-Role many-to-many relationship
+model UserRole {
+  id       String   @id @default(cuid())
+  userId   String
+  roleId   String
+  
+  // Role assignment metadata
+  assignedBy String?
+  assignedAt DateTime @default(now())
+  expiresAt  DateTime?
+  isActive   Boolean  @default(true)
+  
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// Permission model for defining system permissions
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  resource    String   // e.g., 'users', 'posts', 'orders'
+  action      String   // e.g., 'create', 'read', 'update', 'delete'
+  description String?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  rolePermissions RolePermission[]
+  
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+// Junction table for Role-Permission many-to-many relationship
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  
+  // Permission configuration
+  isGranted    Boolean  @default(true)
+  conditions   Json?    // Store conditional permissions as JSON
+  
+  // Relations
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
