@@ -1,6 +1,6 @@
 import { prisma } from './prisma'
 import { hashPassword, verifyPassword, createSession, deleteSession } from './auth'
-import { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } from './email'
+import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationCodeEmail } from './email'
 import { validateData, registerSchema, loginSchema, passwordResetRequestSchema, passwordResetSchema } from './validations'
 import { getDefaultRole, assignRole } from './rbac'
 import crypto from 'crypto'
@@ -445,7 +445,7 @@ export async function resendEmailVerification(email: string): Promise<{ success:
     })
 
     // Send verification email
-    await sendEmailVerification(
+    await sendVerificationCodeEmail(
       user.email,
       user.firstName || 'User',
       verificationToken
