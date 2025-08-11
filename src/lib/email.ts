@@ -217,24 +217,90 @@ export async function sendPasswordResetEmail(
 /**
  * Send email verification
  */
-export async function sendEmailVerification(
+/**
+ * Send simple 6-digit verification code email (no templates needed)
+ */
+export async function sendVerificationCodeEmail(
   userEmail: string,
   userName: string,
-  verificationToken: string
+  verificationCode: string
 ): Promise<boolean> {
-  const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`
+  const subject = 'Verify Your Email - Arizon'
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #333; text-align: center;">Email Verification</h2>
+      <p>Hello ${userName},</p>
+      <p>Thank you for signing up with Arizon! Please use the verification code below to verify your email address:</p>
+      
+      <div style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+        <h1 style="color: #007bff; font-size: 32px; margin: 0; letter-spacing: 4px;">${verificationCode}</h1>
+      </div>
+      
+      <p><strong>This code will expire in 15 minutes.</strong></p>
+      <p>If you didn't request this verification, please ignore this email.</p>
+      
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="color: #666; font-size: 12px; text-align: center;">
+        This is an automated message from Arizon. Please do not reply to this email.
+      </p>
+    </div>
+  `
+  
+  const textContent = `
+Hello ${userName},
 
-  return await sendEmail({
-    to: userEmail,
-    subject: '', // Will be overridden by template
-    templateName: 'email-verification',
-    templateVariables: {
-      userName,
-      verificationLink,
-      appName: 'Arizon',
-      supportEmail: process.env.SUPPORT_EMAIL || 'support@arizon.com',
-    },
-  })
+Thank you for signing up with Arizon! Please use the verification code below to verify your email address:
+
+Verification Code: ${verificationCode}
+
+This code will expire in 15 minutes.
+
+If you didn't request this verification, please ignore this email.
+
+---
+This is an automated message from Arizon.
+  `
+
+  try {
+    const mailOptions = {
+      from: process.env.SMTP_FROM || 'noreply@arizon.com',
+      to: userEmail,
+      subject: subject,
+      html: htmlContent,
+      text: textContent,
+    }
+
+    // Log email attempt
+    const emailLogId = await logEmailAttempt({
+      to: userEmail,
+      from: mailOptions.from,
+      subject: subject,
+    })
+
+    // Send email using existing transporter
+    await transporter.sendMail(mailOptions)
+    
+    // Update log as successful
+    await updateEmailLog(emailLogId, EmailStatus.SENT, null, new Date())
+    
+    return true
+  } catch (error) {
+    console.error('Failed to send verification code email:', error)
+    
+    // Update log as failed if we have the log ID
+    try {
+      const emailLogId = await logEmailAttempt({
+        to: userEmail,
+        from: process.env.SMTP_FROM || 'noreply@arizon.com',
+        subject: subject,
+      })
+      await updateEmailLog(emailLogId, EmailStatus.FAILED, error instanceof Error ? error.message : 'Unknown error')
+    } catch (logError) {
+      console.error('Failed to log email error:', logError)
+    }
+    
+    return false
+  }
 }
 
 /**

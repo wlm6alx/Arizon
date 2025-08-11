@@ -13,7 +13,8 @@
     "test:ci": "jest --ci --coverage --watchAll=false",
     "test:unit": "jest --testPathPattern=__tests__",
     "test:integration": "jest --testPathPattern=integration",
-    "seed:roles": "npx tsx src/scripts/seed-roles.ts"
+    "seed:roles": "npx tsx src/scripts/seed-roles.ts",
+    "seed:templates": "npx tsx src/lib/seed-templates.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",

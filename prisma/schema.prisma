@@ -23,6 +23,8 @@ model User {
   // Authentication fields
   password  String
   emailVerified DateTime?
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
   isActive  Boolean  @default(true)
   
   // Profile fields

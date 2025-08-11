@@ -1,4 +1,4 @@
-import { createEmailTemplate } from './email'
+import { createEmailTemplate } from '../lib/email'
 
 /**
  * Seed default email templates
