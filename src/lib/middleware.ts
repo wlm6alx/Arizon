@@ -16,9 +16,10 @@ export type MiddlewareHandler = (
   response: NextResponse
 ) => Promise<NextResponse | void>
 
-export type APIHandler = (
-  request: AuthenticatedRequest
-) => Promise<NextResponse>
+export type APIHandler<T = unknown> = (
+  request: AuthenticatedRequest,
+  context: { params: T }
+) => Promise<NextResponse>;
 
 // Error response helper
 export function createErrorResponse(
@@ -243,31 +244,33 @@ export function getValidatedDataSafe<T = unknown>(request: NextRequest): T | nul
 }
 
 // API route wrapper with middleware support
-export function withMiddleware(
-  handler: APIHandler,
+export function withMiddleware<T>(
+  handler: APIHandler<T>,
   ...middlewares: MiddlewareHandler[]
 ) {
-  return async (request: NextRequest) => {
+  return async (request: NextRequest, context: { params: T }) => {
     try {
-      const response = NextResponse.next()
-      const composedMiddleware = composeMiddleware(...middlewares)
-      
-      const middlewareResult = await composedMiddleware(request as AuthenticatedRequest, response)
-      
-      if (middlewareResult instanceof NextResponse) {
-        return middlewareResult
+      const authRequest: AuthenticatedRequest = request;
+      const response = NextResponse.next();
+
+      for (const middleware of middlewares) {
+        const result = await middleware(authRequest, response);
+        if (result) {
+          return result; // Middleware returned a response, stop processing
+        }
       }
 
-      return await handler(request as AuthenticatedRequest)
+      return await handler(authRequest, context);
     } catch (error) {
-      console.error('API Error:', error)
+      console.error('API Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       return createErrorResponse(
-        'Internal server error',
+        `Internal server error: ${errorMessage}`,
         500,
         'INTERNAL_SERVER_ERROR'
-      )
+      );
     }
-  }
+  };
 }
 
 // Method validation helper
