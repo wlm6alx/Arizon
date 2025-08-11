@@ -11,7 +11,13 @@
 
 import { seedRolesAndPermissions } from '../lib/rbac'
 import { prisma } from '../lib/prisma'
-
+    
+/**
+ * Seeds the database with default roles and permissions for the RBAC system.
+ * This is a one-time operation and should be run manually using the command
+ * `npx tsx src/scripts/seed-roles.ts`. The script will display the seeded data
+ * to the console.
+ */
 async function main() {
   try {
     console.log('🌱 Starting role and permission seeding...')
@@ -77,5 +83,4 @@ async function main() {
   }
 }
 
-// Run the seeder
 main()

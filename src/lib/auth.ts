@@ -71,7 +71,7 @@ export async function createSession(userId: string): Promise<string> {
 /**
  * Validate a session token
  */
-export async function validateSession(token: string): Promise<{ userId: string; email: string } | null> {
+export async function validateSession(token: string): Promise<{ id: string; userId: string; email: string } | null> {
   try {
     // Check if session exists in database and is not expired
     const session = await prisma.session.findUnique({
@@ -94,6 +94,7 @@ export async function validateSession(token: string): Promise<{ userId: string; 
     }
 
     return {
+      id: session.userId,
       userId: session.userId,
       email: session.user.email,
     }

@@ -28,6 +28,8 @@ async function handleGetProfile(request: NextRequest) {
     }
 
     // Check permission
+    /*
+    This permission is not needed to read your own profile
     const canReadProfile = await hasPermission(user.id, 'profile', 'read')
     if (!canReadProfile) {
       return createErrorResponse(
@@ -35,7 +37,7 @@ async function handleGetProfile(request: NextRequest) {
         403,
         'FORBIDDEN'
       )
-    }
+    }*/
 
     // Get user profile with roles
     const userProfile = await getUserWithRoles(user.id)
@@ -127,6 +129,8 @@ async function handleUpdateProfile(request: NextRequest) {
     }
 
     // Check permission
+    /*
+    User should be able to update his own profile
     const canUpdateProfile = await hasPermission(user.id, 'profile', 'update')
     if (!canUpdateProfile) {
       return createErrorResponse(
@@ -134,7 +138,7 @@ async function handleUpdateProfile(request: NextRequest) {
         403,
         'FORBIDDEN'
       )
-    }
+    }*/
 
     // Get pre-validated body from middleware using central utility
     const body = getValidatedData<ProfileUpdateData>(request)
