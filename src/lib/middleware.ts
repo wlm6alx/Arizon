@@ -201,6 +201,8 @@ export function errorHandlerMiddleware(): MiddlewareHandler {
   }
 }
 
+
+
 // Logging middleware
 export function loggingMiddleware(): MiddlewareHandler {
   return async (request) => {
@@ -283,6 +285,41 @@ export function validateMethod(request: NextRequest, allowedMethods: string[]): 
     )
   }
   return null
+}
+
+import { RoleType } from '@prisma/client';
+import { prisma } from './prisma';
+
+// Role-based authorization middleware
+export function roleAuthMiddleware(requiredRoles: RoleType[]): MiddlewareHandler {
+  return async (request) => {
+    const user = (request as AuthenticatedRequest).user;
+
+    if (!user) {
+      // This should not happen if authMiddleware is used before this
+      return createErrorResponse('Authentication required.', 401, 'AUTH_REQUIRED');
+    }
+
+    if (requiredRoles.length === 0) {
+      return; // No specific roles required
+    }
+
+    const userRoles = await prisma.userRole.findMany({
+      where: { userId: user.userId },
+      include: { role: true },
+    });
+
+    const userRoleTypes = userRoles.map(ur => ur.role.type);
+    const hasRequiredRole = requiredRoles.some(requiredRole => userRoleTypes.includes(requiredRole));
+
+    if (!hasRequiredRole) {
+      return createErrorResponse(
+        'Forbidden: You do not have permission to perform this action.',
+        403,
+        'FORBIDDEN'
+      );
+    }
+  };
 }
 
 // Content-Type validation helper
