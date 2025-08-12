@@ -71,6 +71,20 @@ JWT_SECRET="your-super-secret-jwt-key"
 CLOUDINARY_CLOUD_NAME="your_cloud_name"
 CLOUDINARY_API_KEY="your_api_key"
 CLOUDINARY_API_SECRET="your_api_secret"
+
+# Firebase Credentials
+# Client-side config (ensure these are prefixed with NEXT_PUBLIC_)
+NEXT_PUBLIC_FIREBASE_API_KEY="your_api_key"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your_auth_domain"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="your_project_id"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your_storage_bucket"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your_messaging_sender_id"
+NEXT_PUBLIC_FIREBASE_APP_ID="your_app_id"
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID="your_measurement_id"
+
+# Server-side admin config (Service Account JSON)
+# Paste the entire content of your Firebase service account JSON file here as a single-line string.
+FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", ...}'
 ```
 
 ### 5. Run Database Migrations
