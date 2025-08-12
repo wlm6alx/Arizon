@@ -1,4 +1,6 @@
+import { twMerge } from "tailwind-merge";
 import { NextResponse } from 'next/server';
+import { clsx, type ClassValue } from "clsx";
 
 export function createErrorResponse(
   message: string,
@@ -14,3 +16,8 @@ export function createErrorResponse(
     headers: { 'Content-Type': 'application/json' },
   });
 }
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
