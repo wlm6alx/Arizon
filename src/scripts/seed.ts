@@ -73,6 +73,7 @@ async function main() {
     throw new Error('Failed to create critical seed users for business logic.');
   }
 
+  /*
   // --- Create Warehouses ---
   console.log('Creating warehouses...');
   const warehouse1 = await prisma.warehouse.create({ data: { name: 'Central Warehouse', address: faker.location.streetAddress(true) } });
@@ -127,7 +128,7 @@ async function main() {
       status: DeliveryStatus.IN_TRANSIT,
       deliveryDate: faker.date.future(),
     }
-  });
+  });*/
 
   console.log('Seeding finished successfully!');
 }
