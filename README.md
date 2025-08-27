@@ -1,158 +1,199 @@
-# Arizon - Backend API
+# Arizon - Plateforme Agricole Intelligente
 
-Welcome to the Arizon Backend API project. This is a robust and scalable backend system built with Next.js, designed to power an e-commerce and inventory management platform.
+Une plateforme moderne pour connecter producteurs agricoles et consommateurs, construite avec Next.js 15, TypeScript, et Tailwind CSS.
 
-## Features
+## 🚀 Fonctionnalités
 
-- **Modern Tech Stack**: Built with Next.js 15 (App Router) and TypeScript.
-- **Database ORM**: Uses Prisma with a PostgreSQL database for type-safe database access.
-- **Comprehensive API**: Full CRUD (Create, Read, Update, Delete) endpoints for all core business models:
-  - Products & Product Categories
-  - Orders & Order Items
-  - Warehouses & Stock Management
-  - Deliveries & Approvisionnements (Supply Orders)
-- **Authentication**: Secure, JWT-based authentication system for managing user sessions.
-- **Role-Based Access Control (RBAC)**: Granular permission system with 7 default roles (`ADMIN`, `BUSINESS`, `CLIENT`, `SUPPLIER`, `STOCK_MANAGER`, `COMMAND_MANAGER`, `DELIVERY_DRIVER`).
-- **Image Uploads**: Integrated with Cloudinary for handling image uploads for products and user profiles.
-- **Database Seeding**: Includes a comprehensive script to seed the database with realistic sample data for easy testing and development.
-- **Input Validation**: Uses Zod for validating API request bodies and parameters.
+- **Système d'authentification complet** avec inscription, connexion et récupération de mot de passe
+- **Interface utilisateur moderne** avec thème vert agricole et design responsive
+- **Gestion des utilisateurs** avec rôles et permissions
+- **Catalogue de produits** pour les entreprises agricoles
+- **Suivi des commandes** en temps réel
+- **Analyses et rapports** pour optimiser votre activité
+- **Plateforme multilingue** (français par défaut)
 
-## Tech Stack
+## 🛠️ Technologies utilisées
 
-- **Framework**: [Next.js](https://nextjs.org/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/)
-- **ORM**: [Prisma](https://www.prisma.io/)
-- **Image Storage**: [Cloudinary](https://cloudinary.com/)
-- **Validation**: [Zod](https://zod.dev/)
-- **Authentication**: [JSON Web Tokens (JWT)](https://jwt.io/)
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4 avec thème personnalisé vert
+- **Base de données**: Prisma avec PostgreSQL
+- **Authentification**: JWT avec sessions sécurisées
+- **Validation**: Zod pour la validation des données
+- **Tests**: Jest avec configuration complète
+- **Linting**: ESLint avec règles strictes
 
----
+## 🎨 Thème et Design
 
-## Getting Started
+Le projet utilise un thème vert moderne inspiré de l'agriculture durable :
 
-Follow these instructions to get the project up and running on your local machine.
+- **Couleurs principales**: Palette de verts (oklch) pour un rendu naturel
+- **Gradients**: Effets visuels subtils avec des ombres et lueurs vertes
+- **Typographie**: Hiérarchie claire avec des polices lisibles
+- **Responsive**: Design adaptatif pour tous les appareils
+- **Accessibilité**: Respect des standards WCAG avec attributs ARIA
 
-### 1. Prerequisites
+## 📱 Pages d'authentification
 
-- [Node.js](https://nodejs.org/en) (v20.x or later)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- A running [PostgreSQL](https://www.postgresql.org/download/) database instance.
+### Inscription (`/signup`)
+- Formulaire d'inscription complet avec validation
+- Choix du type d'utilisateur (client/entreprise)
+- Validation en temps réel des champs
+- Intégration avec l'API backend
 
-### 2. Clone the Repository
+### Connexion (`/login`)
+- Formulaire de connexion sécurisé
+- Gestion des erreurs d'authentification
+- Lien vers la récupération de mot de passe
+- Connexion sociale avec Google
 
-```bash
-git clone <your-repository-url>
-cd arizon
-```
+### Mot de passe oublié (`/forgot-password`)
+- Demande de réinitialisation par email
+- Validation de l'adresse email
+- Confirmation de l'envoi
 
-### 3. Install Dependencies
+### Tableau de bord (`/dashboard`)
+- Interface utilisateur après authentification
+- Statistiques et métriques clés
+- Actions rapides et navigation
+- Activité récente
 
-```bash
-npm install
-```
+## 🔧 Installation et configuration
 
-### 4. Set Up Environment Variables
+1. **Cloner le repository**
+   ```bash
+   git clone <repository-url>
+   cd arizon
+   ```
 
-Create a `.env` file in the root of the project by copying the example below. **Do not commit this file to version control.**
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
 
-```env
-# .env
+3. **Configuration de la base de données**
+   ```bash
+   # Copier le fichier d'environnement
+   cp .env.example .env
+   
+   # Configurer les variables d'environnement
+   # DATABASE_URL, JWT_SECRET, etc.
+   
+   # Générer le client Prisma
+   npx prisma generate
+   
+   # Exécuter les migrations
+   npx prisma migrate dev
+   ```
 
-# PostgreSQL Database Connection
-# Example: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-DATABASE_URL="postgresql://postgres:admin@localhost:5432/arizon"
+4. **Lancer le serveur de développement**
+   ```bash
+   npm run dev
+   ```
 
-# JWT Secret for signing authentication tokens
-# Generate a secure, random string (e.g., using `openssl rand -hex 32`)
-JWT_SECRET="your-super-secret-jwt-key"
+5. **Ouvrir dans le navigateur**
+   ```
+   http://localhost:3000
+   ```
 
-# Cloudinary Credentials for Image Uploads
-CLOUDINARY_CLOUD_NAME="your_cloud_name"
-CLOUDINARY_API_KEY="your_api_key"
-CLOUDINARY_API_SECRET="your_api_secret"
-
-# Firebase Credentials
-# Client-side config (ensure these are prefixed with NEXT_PUBLIC_)
-NEXT_PUBLIC_FIREBASE_API_KEY="your_api_key"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your_auth_domain"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="your_project_id"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your_storage_bucket"
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your_messaging_sender_id"
-NEXT_PUBLIC_FIREBASE_APP_ID="your_app_id"
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID="your_measurement_id"
-
-# Server-side admin config (Service Account JSON)
-# Paste the entire content of your Firebase service account JSON file here as a single-line string.
-FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", ...}'
-```
-
-### 5. Run Database Migrations
-
-Apply the database schema to your PostgreSQL instance using Prisma Migrate.
-
-```bash
-npx prisma migrate dev
-```
-
-### 6. Seed the Database (Optional)
-
-To populate the database with sample data for testing, run the seed script.
+## 🧪 Tests
 
 ```bash
+# Tests unitaires
+npm run test:unit
+
+# Tests d'intégration
+npm run test:integration
+
+# Tests avec couverture
+npm run test:coverage
+
+# Tests en mode watch
+npm run test:watch
+```
+
+## 🌱 Seed de données
+
+```bash
+# Nettoyer la base de données
+npm run seed:clean
+
+# Créer les rôles de base
+npm run seed:roles
+
+# Ajouter les modèles d'entreprise
+npm run seed:business
+
+# Ajouter les templates
+npm run seed:templates
+
+# Ajouter les données de test
+npm run seed:data
+
+# Ou tout exécuter en une fois
 npm run seed
 ```
 
-### 7. Run the Development Server
+## 📁 Structure du projet
 
-Start the Next.js development server.
-
-```bash
-npm run dev
+```
+src/
+├── app/                    # Pages Next.js App Router
+│   ├── api/               # API routes
+│   ├── auth/              # Pages d'authentification
+│   ├── dashboard/         # Tableau de bord
+│   └── globals.css        # Styles globaux
+├── components/             # Composants React réutilisables
+│   ├── ui/                # Composants UI de base
+│   └── auth/              # Composants d'authentification
+├── hooks/                  # Hooks React personnalisés
+├── lib/                    # Utilitaires et services
+│   ├── auth-service.ts    # Service d'authentification
+│   ├── prisma.ts          # Client Prisma
+│   └── validations.ts     # Schémas de validation
+└── scripts/                # Scripts de seed et maintenance
 ```
 
-The API will be available at `http://localhost:3000`.
+## 🔐 Sécurité
 
-## Available Scripts
+- **Validation des données** avec Zod
+- **Rate limiting** sur les API sensibles
+- **Hachage sécurisé** des mots de passe
+- **Sessions JWT** avec expiration
+- **CORS** configuré pour la production
+- **Middleware** de sécurité centralisé
 
-- `npm run dev`: Starts the development server with Turbopack.
-- `npm run build`: Builds the application for production.
-- `npm run start`: Starts the production server.
-- `npm run lint`: Lints the codebase using ESLint.
-- `npm run seed`: Seeds the database with sample data.
+## 🚀 Déploiement
 
+Le projet est optimisé pour le déploiement sur Vercel :
 
-## Getting Started
+1. **Build de production**
+   ```bash
+   npm run build
+   ```
 
-First, run the development server:
+2. **Variables d'environnement** à configurer sur Vercel
+3. **Base de données** PostgreSQL (recommandé Supabase ou PlanetScale)
+4. **Domaine personnalisé** optionnel
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🤝 Contribution
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Fork le projet
+2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 Licence
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
-## Learn More
+## 📞 Support
 
-To learn more about Next.js, take a look at the following resources:
+Pour toute question ou support :
+- Ouvrir une issue sur GitHub
+- Contacter l'équipe de développement
+- Consulter la documentation technique
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Arizon** - Transformons l'agriculture ensemble 🌱
