@@ -66,7 +66,7 @@ export default function Header() {
       {/* Sélecteur de langue + hamburger */}
       <div className="flex items-center space-x-4 relative">
         {/* Langue */}
-        <div ref={LangueRef} className="flex items-center">
+        <div ref={LangueRef} className="hidden sm:flex items-center ">
           <button onClick={toggleLang} className="items-center">
             <Image
               alt="Selection de la langue"
@@ -123,7 +123,7 @@ export default function Header() {
                 </div>
                 <h2 className="mt-2 text-lg font-semibold">Dauphin Dongmo</h2>
 
-                <button className="mt-2 text-gray-700 py-2 px-6 rounded hover:bg-gray-200 flex items-center gap-2">
+                <button className="mt-2 text-gray-700 py-2 px-6 rounded-full border-1 border-black hover:bg-gray-200 flex items-center gap-2">
                   <Image
                     alt="profile icon"
                     src="../Profile.svg"
@@ -136,7 +136,7 @@ export default function Header() {
 
               {/* Séparateur */}
               <div className="flex justify-center my-3">
-                <span className="block w-4/5 h-0.5 bg-gray-300"></span>
+                <span className="block w-4/5 h-0.5 my-1 bg-gray-300"></span>
               </div>
 
               {/* Liens */}
