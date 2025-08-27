@@ -82,9 +82,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-5 h-5 text-red-500" />
-          <span className="text-red-700 text-sm">{error.message}</span>
+        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-red-700 text-sm font-medium mb-1">Erreur lors de la connexion</p>
+            <p className="text-red-600 text-sm">{error.message}</p>
+          </div>
         </div>
       )}
 
@@ -200,9 +203,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
       </div>
 
       <div className="text-center text-sm text-gray-600">
-        Vous n'avez pas de compte ?{" "}
+        Vous n&apos;avez pas de compte ?{" "}
         <Link href="/signup" className="text-green-600 hover:text-green-700 font-medium underline underline-offset-4">
-          S'inscrire
+          S&apos;inscrire
         </Link>
       </div>
     </form>

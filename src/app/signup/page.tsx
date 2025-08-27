@@ -1,7 +1,8 @@
 "use client"
 
-import { Leaf } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import { Leaf } from "lucide-react"
 import { SignupForm } from "@/components/signup-form"
 
 export default function SignupPage() {
@@ -9,7 +10,9 @@ export default function SignupPage() {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="bg-muted relative hidden lg:block overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 to-green-800/20 z-10" />
-        <img
+        <Image
+          width={2070}
+          height={1380}
           src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
           alt="Champ agricole verdoyant avec cultures saines"
           className="absolute inset-0 h-full w-full object-cover"
@@ -50,13 +53,13 @@ export default function SignupPage() {
           <p>© 2024 Arizon. Tous droits réservés.</p>
           <p className="mt-1">
             En créant un compte, vous acceptez nos{' '}
-            <a href="/terms" className="text-green-600 hover:text-green-700 underline">
+            <Link href="/terms" className="text-green-600 hover:text-green-700 underline">
               conditions d&apos;utilisation
-            </a>{' '}
+            </Link>{' '}
             et notre{' '}
-            <a href="/privacy" className="text-green-600 hover:text-green-700 underline">
+            <Link href="/privacy" className="text-green-600 hover:text-green-700 underline">
               politique de confidentialité
-            </a>
+            </Link>
           </p>
         </div>
       </div>

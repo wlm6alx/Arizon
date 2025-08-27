@@ -1,50 +1,9 @@
 import { Leaf, ArrowRight, Users, Package, Truck, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
-export default function HomePage() {
+export default function RootPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-green-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="green-gradient text-white flex size-10 items-center justify-center rounded-lg green-shadow">
-                <Leaf className="size-6" />
-              </div>
-              <span className="text-2xl font-bold text-green-700">Arizon</span>
-            </div>
-            
-            <nav className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-gray-600 hover:text-green-700 transition-colors">
-                Fonctionnalités
-              </a>
-              <a href="#about" className="text-gray-600 hover:text-green-700 transition-colors">
-                À propos
-              </a>
-              <a href="#contact" className="text-gray-600 hover:text-green-700 transition-colors">
-                Contact
-              </a>
-            </nav>
-            
-            <div className="flex items-center gap-4">
-              <Link 
-                href="/login"
-                className="text-green-700 hover:text-green-800 font-medium transition-colors"
-              >
-                Connexion
-              </Link>
-              <Link 
-                href="/signup"
-                className="green-gradient text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all duration-200 green-shadow"
-              >
-                Commencer
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
@@ -170,56 +129,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="green-gradient text-white flex size-8 items-center justify-center rounded-lg">
-                  <Leaf className="size-5" />
-                </div>
-                <span className="text-xl font-bold">Arizon</span>
-              </div>
-              <p className="text-gray-300">
-                La plateforme agricole intelligente qui connecte producteurs et consommateurs.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Produit</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition-colors">Fonctionnalités</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Tarifs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Intégrations</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Centre d&apos;aide</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Légal</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition-colors">Confidentialité</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Conditions</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cookies</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-            <p>© 2024 Arizon. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
