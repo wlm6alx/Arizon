@@ -11,11 +11,11 @@ export default function Footer() {
       <div className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2 mb-2 sm:mb-0">
         <span>© 2025 AriZon, Inc.</span>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Terms</a>
+        <a href="/terms-of-service" className="hover:underline">Terms</a>
         <span className="hidden sm:inline">·</span>
         <a href="#" className="hover:underline">Sitemap</a>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Privacy</a>
+        <a href="/privacy-policy" className="hover:underline">Privacy</a>
         <span className="hidden sm:inline">·</span>
         <a href="#" className="hover:underline">Your Privacy Choices</a>
         <Image 

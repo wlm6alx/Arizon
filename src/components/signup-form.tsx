@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
@@ -16,8 +15,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    userType: 'client'
+    confirmPassword: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -74,7 +72,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        username: formData.userType === 'business' ? `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}` : undefined
+        username: `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}`
       })
       
       if (success) {
@@ -105,9 +103,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-5 h-5 text-red-500" />
-          <span className="text-red-700 text-sm">{error.message}</span>
+        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-red-700 text-sm font-medium mb-1">Erreur lors de l'inscription</p>
+            <p className="text-red-600 text-sm">{error.message}</p>
+          </div>
         </div>
       )}
 
@@ -237,28 +238,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
           )}
         </div>
 
-        {/*<div className="grid gap-2">
-          <Label htmlFor="user-type" className="text-gray-700 font-medium">
-            Comment allez-vous utiliser notre plateforme ? *
-          </Label>
-          <Select 
-            value={formData.userType} 
-            onValueChange={(value) => handleInputChange('userType', value)}
-            required
-          >
-            <SelectTrigger className="border-gray-200 focus:border-green-500 focus:ring-green-500">
-              <SelectValue placeholder="Sélectionnez votre objectif" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="client">
-                Client - Consulter et acheter nos produits et services
-              </SelectItem>
-              <SelectItem value="business">
-                Entreprise - Vendre des produits agricoles
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>*/}
+
 
         <Button 
           type="submit" 
@@ -307,7 +287,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
               fill="#EA4335"
             />
           </svg>
-          S'inscrire avec Google
+          S&apos;inscrire avec Google
         </Button>
       </div>
 

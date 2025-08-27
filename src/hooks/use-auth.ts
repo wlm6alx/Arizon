@@ -89,7 +89,14 @@ export function useAuth() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Échec de la connexion')
+        // Handle structured error format from backend
+        if (data.error && data.error.message) {
+          throw new Error(data.error.message)
+        } else if (data.error) {
+          throw new Error(data.error)
+        } else {
+          throw new Error('Échec de la connexion')
+        }
       }
 
       const { user, token } = data.data
@@ -130,7 +137,14 @@ export function useAuth() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Échec de l\'inscription')
+        // Handle structured error format from backend
+        if (data.error && data.error.message) {
+          throw new Error(data.error.message)
+        } else if (data.error) {
+          throw new Error(data.error)
+        } else {
+          throw new Error('Échec de l\'inscription')
+        }
       }
 
       const { user, token } = data.data
@@ -201,7 +215,14 @@ export function useAuth() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Échec de la demande de réinitialisation')
+        // Handle structured error format from backend
+        if (data.error && data.error.message) {
+          throw new Error(data.error.message)
+        } else if (data.error) {
+          throw new Error(data.error)
+        } else {
+          throw new Error('Échec de la demande de réinitialisation')
+        }
       }
 
       return true
