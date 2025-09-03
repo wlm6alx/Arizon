@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import {
@@ -7,7 +6,6 @@ import {
   AuthenticatedRequest,
   createErrorResponse,
   createSuccessResponse,
-  validateRequestMiddleware,
 } from '@/lib/middleware';
 import { hasRole } from '@/lib/rbac';
 import { RoleType, PaymentMethod, OrderStatus } from '@prisma/client';
@@ -109,6 +107,8 @@ async function postHandler(req: AuthenticatedRequest) {
 const getOrdersSchema = z.object({
     page: z.string().optional().default('1'),
     limit: z.string().optional().default('10'),
+    sort: z.string().optional().default('desc'),
+    status: z.nativeEnum(OrderStatus).optional(),
 });
 
 async function getHandler(req: AuthenticatedRequest) {
@@ -122,12 +122,12 @@ async function getHandler(req: AuthenticatedRequest) {
       return createErrorResponse(validation.error.message, 400);
     }
     
-    const { page, limit } = validation.data;
+    const { page, limit, sort, status } = validation.data;
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
     const canViewAll = await hasRole(user.userId, [RoleType.ADMIN, RoleType.BUSINESS, RoleType.COMMAND_MANAGER]);
-    const where = canViewAll ? {} : { clientId: user.userId };
+    const where = canViewAll ? { ...(status && { status }) } : { clientId: user.userId, ...(status && { status }) };
 
     try {
         const orders = await prisma.order.findMany({
@@ -138,7 +138,7 @@ async function getHandler(req: AuthenticatedRequest) {
                 orderItems: true,
                 client: true,
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: sort as 'asc' | 'desc' }
         });
 
         const total = await prisma.order.count({ where });
@@ -153,7 +153,7 @@ async function getHandler(req: AuthenticatedRequest) {
             },
         });
     } catch (error) {
-        return createErrorResponse('Failed to fetch orders', 500);
+        return createErrorResponse(`Failed to fetch orders: ${error}`, 500);
     }
 }
 

@@ -74,7 +74,11 @@ export default function Header() {
             placeholder="Tapez ici pour rechercher"
             className="w-full rounded-full border px-3 py-2 pr-12 focus:outline-none"
           />
-          <button className="absolute inset-y-0 right-2 flex items-center justify-center">
+          <button 
+            className="absolute inset-y-0 right-2 flex items-center justify-center"
+            title="Rechercher"
+            aria-label="Rechercher"
+          >
             <Image
               alt="Search button"
               src="/SearchButton.svg"
@@ -117,6 +121,9 @@ export default function Header() {
           <button
             onClick={toggleMenu}
             className="relative w-10 h-10 flex flex-col justify-center items-center group"
+            title="Ouvrir le menu"
+            aria-label="Ouvrir le menu"
+            aria-expanded={open ? "true" : "false"}
           >
             <span
               className={`block h-0.5 w-6 bg-gray-800 rounded transition-transform duration-300 ${
