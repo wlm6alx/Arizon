@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from './prisma'
 import { RoleType } from '@prisma/client'
 
@@ -420,7 +421,7 @@ export async function getDefaultRole(): Promise<{ id: string; type: RoleType } |
   const defaultRole = await prisma.role.findFirst({
     where: { 
       isDefault: true,
-      isActive: true 
+      // isActive: true 
     },
     select: {
       id: true,

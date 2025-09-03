@@ -2,8 +2,9 @@ import { prisma } from './prisma'
 import { hashPassword, verifyPassword, createSession, deleteSession } from './auth'
 import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationCodeEmail } from './email'
 import { validateData, registerSchema, loginSchema, passwordResetRequestSchema, passwordResetSchema } from './validations'
-import { getDefaultRole, assignRole } from './rbac'
+import { assignRole } from './rbac'
 import crypto from 'crypto'
+import { RoleType } from '@prisma/client'
 
 export interface RegisterData {
   email: string
@@ -95,9 +96,9 @@ export async function registerUser(userData: RegisterData): Promise<AuthResult> 
     })
 
     // Assign default role to new user
-    const defaultRole = await getDefaultRole()
+    const defaultRole = RoleType.CLIENT; // await getDefaultRole()
     if (defaultRole) {
-      await assignRole(user.id, defaultRole.type)
+      await assignRole(user.id, defaultRole); // Default role is CLIENT
     }
 
     // Create session

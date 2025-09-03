@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,191 +7,370 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model for authentication and user management
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String?  @unique
-  firstName String?
-  lastName  String?
-  avatar    String?
-  phone     String?
-  
-  // Authentication fields
-  password  String
-  emailVerified DateTime?
-  emailVerificationToken String?
-  emailVerificationExpires DateTime?
-  isActive  Boolean  @default(true)
-  
-  // Profile fields
-  bio       String?
-  address   String?
-  city      String?
-  country   String?
-  timezone  String?
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLoginAt DateTime?
-  
-  // Relations
-  posts     Post[]
-  sessions  Session[]
-  userRoles UserRole[]
-  
-  // Business relations
-  supplierApprovisionnements        Approvisionnement[] @relation("SupplierApprovisionnements")
+  id                                  String              @id @default(cuid())
+  email                               String              @unique
+  username                            String?             @unique
+  firstName                           String?
+  lastName                            String?
+  avatar                              String?
+  phone                               String?
+  password                            String
+  emailVerified                       DateTime?
+  emailVerificationToken              String?
+  emailVerificationExpires            DateTime?
+  isActive                            Boolean             @default(true)
+  bio                                 String?
+  address                             String?
+  city                                String?
+  country                             String?
+  timezone                            String?
+  createdAt                           DateTime            @default(now())
+  updatedAt                           DateTime            @updatedAt
+  lastLoginAt                         DateTime?
   businessDeveloperApprovisionnements Approvisionnement[] @relation("BusinessDeveloperApprovisionnements")
-  stockManagerApprovisionnements    Approvisionnement[] @relation("StockManagerApprovisionnements")
-  clientOrders                      Order[]             @relation("ClientOrders")
-  driverDeliveries                  Delivery[]          @relation("DriverDeliveries")
-  notifications                     Notification[]
-  
+  stockManagerApprovisionnements      Approvisionnement[] @relation("StockManagerApprovisionnements")
+  supplierApprovisionnements          Approvisionnement[] @relation("SupplierApprovisionnements")
+  driverDeliveries                    Delivery[]          @relation("DriverDeliveries")
+  notifications                       Notification[]
+  clientOrders                        Order[]             @relation("ClientOrders")
+  posts                               Post[]
+  sessions                            Session[]
+  userRoles                           UserRole[]
+
   @@map("users")
 }
 
-// Session model for user sessions
 model Session {
   id        String   @id @default(cuid())
   userId    String
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-  
-  // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("sessions")
 }
 
-// Post model for content management
 model Post {
-  id          String   @id @default(cuid())
-  title       String
-  content     String?
-  excerpt     String?
-  slug        String   @unique
-  published   Boolean  @default(false)
-  featured    Boolean  @default(false)
-  
-  // SEO fields
+  id              String         @id @default(cuid())
+  title           String
+  content         String?
+  excerpt         String?
+  slug            String         @unique
+  published       Boolean        @default(false)
+  featured        Boolean        @default(false)
   metaTitle       String?
   metaDescription String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  publishedAt DateTime?
-  
-  // Relations
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  categories  PostCategory[]
-  tags        PostTag[]
-  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  publishedAt     DateTime?
+  authorId        String
+  categories      PostCategory[]
+  tags            PostTag[]
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   @@map("posts")
 }
 
-// Category model
 model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
+  id          String         @id @default(cuid())
+  name        String         @unique
+  slug        String         @unique
   description String?
   color       String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   posts       PostCategory[]
-  
+
   @@map("categories")
 }
 
-// Tag model
 model Tag {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  slug      String   @unique
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
   color     String?
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   posts     PostTag[]
-  
+
   @@map("tags")
 }
 
-// Junction table for Post-Category many-to-many relationship
 model PostCategory {
   id         String   @id @default(cuid())
   postId     String
   categoryId String
-  
-  // Relations
-  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
   @@unique([postId, categoryId])
   @@map("post_categories")
 }
 
-// Junction table for Post-Tag many-to-many relationship
 model PostTag {
   id     String @id @default(cuid())
   postId String
   tagId  String
-  
-  // Relations
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  
+
   @@unique([postId, tagId])
   @@map("post_tags")
 }
 
-// Email template model for email services
 model EmailTemplate {
   id          String   @id @default(cuid())
   name        String   @unique
   subject     String
   htmlContent String
   textContent String?
-  variables   Json?    // Store template variables as JSON
-  
-  // Timestamps
+  variables   Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@map("email_templates")
 }
 
-// Email log model to track sent emails
 model EmailLog {
-  id          String   @id @default(cuid())
-  to          String
-  from        String
-  subject     String
-  templateId  String?
-  status      EmailStatus @default(PENDING)
-  error       String?
-  sentAt      DateTime?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id         String      @id @default(cuid())
+  to         String
+  from       String
+  subject    String
+  templateId String?
+  status     EmailStatus @default(PENDING)
+  error      String?
+  sentAt     DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
   @@map("email_logs")
 }
 
-// Enum for email status
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  type        RoleType         @unique
+  description String?
+  color       String?
+  isActive    Boolean          @default(true)
+  isDefault   Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  userRoles   UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id         String    @id @default(cuid())
+  userId     String
+  roleId     String
+  assignedBy String?
+  assignedAt DateTime  @default(now())
+  expiresAt  DateTime?
+  isActive   Boolean   @default(true)
+  role       Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  resource        String
+  action          String
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  isGranted    Boolean    @default(true)
+  conditions   Json?
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model ProductCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique @db.VarChar(50)
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id                 String              @id @default(cuid())
+  categoryId         String?
+  name               String              @db.VarChar(100)
+  description        String?
+  unit               String              @db.VarChar(20)
+  imageUrl           String?             @db.VarChar(255)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  approvisionnements Approvisionnement[]
+  orderItems         OrderItem[]
+  category           ProductCategory?    @relation(fields: [categoryId], references: [id])
+  stocks             Stock[]
+
+  @@map("products")
+}
+
+model Warehouse {
+  id                 String              @id @default(cuid())
+  name               String              @db.VarChar(100)
+  address            String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  approvisionnements Approvisionnement[]
+  orders             Order[]
+  stocks             Stock[]
+
+  @@map("warehouses")
+}
+
+model Approvisionnement {
+  id                  String                  @id @default(cuid())
+  supplierId          String
+  productId           String
+  warehouseId         String
+  quantity            Decimal                 @db.Decimal(10, 2)
+  proposedPrice       Decimal                 @db.Decimal(10, 2)
+  deliveryDate        DateTime                @db.Date
+  status              ApprovisionnementStatus @default(PENDING)
+  businessDeveloperId String?
+  stockManagerId      String?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  businessDeveloper   User?                   @relation("BusinessDeveloperApprovisionnements", fields: [businessDeveloperId], references: [id])
+  product             Product                 @relation(fields: [productId], references: [id])
+  stockManager        User?                   @relation("StockManagerApprovisionnements", fields: [stockManagerId], references: [id])
+  supplier            User                    @relation("SupplierApprovisionnements", fields: [supplierId], references: [id])
+  warehouse           Warehouse               @relation(fields: [warehouseId], references: [id])
+  payments            Payment[]
+  stocks              Stock[]
+
+  @@map("approvisionnements")
+}
+
+model Stock {
+  id                  String             @id @default(cuid())
+  productId           String
+  warehouseId         String
+  quantity            Decimal            @db.Decimal(10, 2)
+  unitPrice           Decimal            @db.Decimal(10, 2)
+  approvisionnementId String?
+  lastUpdated         DateTime           @default(now()) @updatedAt
+  approvisionnement   Approvisionnement? @relation(fields: [approvisionnementId], references: [id])
+  product             Product            @relation(fields: [productId], references: [id])
+  warehouse           Warehouse          @relation(fields: [warehouseId], references: [id])
+
+  @@unique([productId, warehouseId])
+  @@map("stocks")
+}
+
+model Order {
+  id              String         @id @default(cuid())
+  clientId        String
+  warehouseId     String
+  orderDate       DateTime       @default(now())
+  totalAmount     Decimal        @db.Decimal(10, 2)
+  status          OrderStatus    @default(PENDING)
+  deliveryOption  Boolean        @default(false)
+  deliveryAddress String?
+  paymentMethod   PaymentMethod
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  delivery        Delivery?
+  notifications   Notification[]
+  orderItems      OrderItem[]
+  client          User           @relation("ClientOrders", fields: [clientId], references: [id])
+  warehouse       Warehouse      @relation(fields: [warehouseId], references: [id])
+  payments        Payment[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Decimal @db.Decimal(10, 2)
+  unitPrice Decimal @db.Decimal(10, 2)
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Delivery {
+  id             String         @id @default(cuid())
+  orderId        String         @unique
+  driverId       String?
+  status         DeliveryStatus @default(ASSIGNED)
+  gpsCoordinates String?
+  eta            DateTime?
+  deliveryDate   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  driver         User?          @relation("DriverDeliveries", fields: [driverId], references: [id])
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  notifications  Notification[]
+
+  @@map("deliveries")
+}
+
+model Payment {
+  id                  String             @id @default(cuid())
+  orderId             String?
+  approvisionnementId String?
+  amount              Decimal            @db.Decimal(10, 2)
+  paymentMethod       PaymentMethod
+  status              PaymentStatus      @default(PENDING)
+  transactionId       String?            @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  approvisionnement   Approvisionnement? @relation(fields: [approvisionnementId], references: [id])
+  order               Order?             @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  title      String           @db.VarChar(200)
+  message    String
+  type       NotificationType
+  isRead     Boolean          @default(false)
+  orderId    String?
+  deliveryId String?
+  createdAt  DateTime         @default(now())
+  delivery   Delivery?        @relation(fields: [deliveryId], references: [id])
+  order      Order?           @relation(fields: [orderId], references: [id])
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
 enum EmailStatus {
   PENDING
   SENT
@@ -202,7 +378,6 @@ enum EmailStatus {
   BOUNCED
 }
 
-// Enum for user roles
 enum RoleType {
   ADMIN
   BUSINESS
@@ -213,351 +388,54 @@ enum RoleType {
   DELIVERY_DRIVER
 }
 
-// Role model for defining system roles
-model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  type        RoleType @unique
-  description String?
-  color       String?
-  
-  // Role configuration
-  isActive    Boolean  @default(true)
-  isDefault   Boolean  @default(false)
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  userRoles   UserRole[]
-  permissions RolePermission[]
-  
-  @@map("roles")
-}
-
-// Junction table for User-Role many-to-many relationship
-model UserRole {
-  id       String   @id @default(cuid())
-  userId   String
-  roleId   String
-  
-  // Role assignment metadata
-  assignedBy String?
-  assignedAt DateTime @default(now())
-  expiresAt  DateTime?
-  isActive   Boolean  @default(true)
-  
-  // Relations
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, roleId])
-  @@map("user_roles")
-}
-
-// Permission model for defining system permissions
-model Permission {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  resource    String   // e.g., 'users', 'posts', 'orders'
-  action      String   // e.g., 'create', 'read', 'update', 'delete'
-  description String?
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  rolePermissions RolePermission[]
-  
-  @@unique([resource, action])
-  @@map("permissions")
-}
-
-// Junction table for Role-Permission many-to-many relationship
-model RolePermission {
-  id           String   @id @default(cuid())
-  roleId       String
-  permissionId String
-  
-  // Permission configuration
-  isGranted    Boolean  @default(true)
-  conditions   Json?    // Store conditional permissions as JSON
-  
-  // Relations
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  
-  @@unique([roleId, permissionId])
-  @@map("role_permissions")
-}
-
-// ==================== BUSINESS MODELS ====================
-
-// Product Category model
-model ProductCategory {
-  id          String   @id @default(cuid())
-  name        String   @unique @db.VarChar(50)
-  description String?  @db.Text
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  products    Product[]
-  
-  @@map("product_categories")
-}
-
-// Product model
-model Product {
-  id          String   @id @default(cuid())
-  categoryId  String?
-  name        String   @db.VarChar(100)
-  description String?  @db.Text
-  unit        String   @db.VarChar(20)
-  imageUrl    String?  @db.VarChar(255)
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  category         ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  approvisionnements Approvisionnement[]
-  stocks           Stock[]
-  orderItems       OrderItem[]
-  
-  @@map("products")
-}
-
-// Warehouse model
-model Warehouse {
-  id        String   @id @default(cuid())
-  name      String   @db.VarChar(100)
-  address   String   @db.Text
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
-  approvisionnements Approvisionnement[]
-  stocks             Stock[]
-  orders             Order[]
-  
-  @@map("warehouses")
-}
-
-// Approvisionnement (Supply) model
-model Approvisionnement {
-  id                   String   @id @default(cuid())
-  supplierId           String
-  productId            String
-  warehouseId          String
-  quantity             Decimal  @db.Decimal(10,2)
-  proposedPrice        Decimal  @db.Decimal(10,2)
-  deliveryDate         DateTime @db.Date
-  status               ApprovisionnementStatus @default(PENDING)
-  businessDeveloperId  String?
-  stockManagerId       String?
-  
-  // Timestamps
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  
-  // Relations
-  supplier             User      @relation("SupplierApprovisionnements", fields: [supplierId], references: [id], onDelete: Restrict)
-  product              Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
-  warehouse            Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
-  businessDeveloper    User?     @relation("BusinessDeveloperApprovisionnements", fields: [businessDeveloperId], references: [id], onDelete: SetNull)
-  stockManager         User?     @relation("StockManagerApprovisionnements", fields: [stockManagerId], references: [id], onDelete: SetNull)
-  stocks               Stock[]
-  payments             Payment[]
-  
-  @@map("approvisionnements")
-}
-
-// Stock model
-model Stock {
-  id                   String   @id @default(cuid())
-  productId            String
-  warehouseId          String
-  quantity             Decimal  @db.Decimal(10,2)
-  unitPrice            Decimal  @db.Decimal(10,2)
-  approvisionnementId  String?
-  
-  // Timestamps
-  lastUpdated          DateTime @default(now()) @updatedAt
-  
-  // Relations
-  product              Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
-  warehouse            Warehouse         @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
-  approvisionnement    Approvisionnement? @relation(fields: [approvisionnementId], references: [id], onDelete: SetNull)
-  
-  @@unique([productId, warehouseId])
-  @@map("stocks")
-}
-
-// Order model
-model Order {
-  id              String   @id @default(cuid())
-  clientId        String
-  warehouseId     String
-  orderDate       DateTime @default(now())
-  totalAmount     Decimal  @db.Decimal(10,2)
-  status          OrderStatus @default(PENDING)
-  deliveryOption  Boolean  @default(false)
-  deliveryAddress String?  @db.Text
-  paymentMethod   PaymentMethod
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  client          User       @relation("ClientOrders", fields: [clientId], references: [id], onDelete: Restrict)
-  warehouse       Warehouse  @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
-  orderItems      OrderItem[]
-  delivery        Delivery?
-  payments        Payment[]
-  notifications   Notification[]
-  
-  @@map("orders")
-}
-
-// Order Item model
-model OrderItem {
-  id         String  @id @default(cuid())
-  orderId    String
-  productId  String
-  quantity   Decimal @db.Decimal(10,2)
-  unitPrice  Decimal @db.Decimal(10,2)
-  
-  // Relations
-  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product    Product @relation(fields: [productId], references: [id], onDelete: Restrict)
-  
-  @@map("order_items")
-}
-
-// Delivery model
-model Delivery {
-  id              String   @id @default(cuid())
-  orderId         String   @unique
-  driverId        String?
-  status          DeliveryStatus @default(ASSIGNED)
-  gpsCoordinates  String?  // Store as "lat,lng" string
-  eta             DateTime?
-  deliveryDate    DateTime?
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  driver          User?    @relation("DriverDeliveries", fields: [driverId], references: [id], onDelete: SetNull)
-  notifications   Notification[]
-  
-  @@map("deliveries")
-}
-
-// Payment model (additional model for tracking payments)
-model Payment {
-  id                   String   @id @default(cuid())
-  orderId              String?
-  approvisionnementId  String?
-  amount               Decimal  @db.Decimal(10,2)
-  paymentMethod        PaymentMethod
-  status               PaymentStatus @default(PENDING)
-  transactionId        String?  @unique
-  
-  // Timestamps
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  
-  // Relations
-  order                Order?            @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  approvisionnement    Approvisionnement? @relation(fields: [approvisionnementId], references: [id], onDelete: SetNull)
-  
-  @@map("payments")
-}
-
-// Notification model (additional model for system notifications)
-model Notification {
-  id         String   @id @default(cuid())
-  userId     String
-  title      String   @db.VarChar(200)
-  message    String   @db.Text
-  type       NotificationType
-  isRead     Boolean  @default(false)
-  orderId    String?
-  deliveryId String?
-  
-  // Timestamps
-  createdAt  DateTime @default(now())
-  
-  // Relations
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order      Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  delivery   Delivery? @relation(fields: [deliveryId], references: [id], onDelete: SetNull)
-  
-  @@map("notifications")
-}
-
-// ==================== ENUMS ====================
-
 enum ApprovisionnementStatus {
-  PENDING           // Waiting for business developer approval
-  APPROVED          // Approved by business developer
-  RECEIVED          // Confirmed by stock manager
-  REJECTED          // Rejected at any stage
-  CANCELLED         // Cancelled by supplier
+  PENDING
+  APPROVED
+  RECEIVED
+  REJECTED
+  CANCELLED
 }
 
 enum OrderStatus {
-  PENDING           // Order placed, awaiting processing
-  CONFIRMED         // Order confirmed
-  PROCESSING        // Being prepared
-  READY             // Ready for pickup/delivery
-  SHIPPED           // Out for delivery
-  DELIVERED         // Successfully delivered
-  CANCELLED         // Order cancelled
-  REFUNDED          // Order refunded
+  PENDING
+  CONFIRMED
+  PROCESSING
+  READY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
 }
 
 enum DeliveryStatus {
-  ASSIGNED          // Assigned to driver
-  PICKED_UP         // Driver picked up the order
-  IN_TRANSIT        // On the way to customer
-  DELIVERED         // Successfully delivered
-  FAILED            // Delivery failed
-  RETURNED          // Returned to warehouse
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+  RETURNED
 }
 
 enum PaymentMethod {
-  CASH              // Cash payment
-  CARD              // Credit/Debit card
-  BANK_TRANSFER     // Bank transfer
-  MOBILE_MONEY      // Mobile money
-  CRYPTO            // Cryptocurrency
+  CASH
+  CARD
+  BANK_TRANSFER
+  MOBILE_MONEY
+  CRYPTO
 }
 
 enum PaymentStatus {
-  PENDING           // Payment pending
-  COMPLETED         // Payment successful
-  FAILED            // Payment failed
-  REFUNDED          // Payment refunded
-  CANCELLED         // Payment cancelled
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
 }
 
 enum NotificationType {
-  ORDER_UPDATE      // Order status update
-  DELIVERY_UPDATE   // Delivery status update
-  PAYMENT_UPDATE    // Payment status update
-  SYSTEM_ALERT      // System alerts
-  PROMOTION         // Promotional notifications
+  ORDER_UPDATE
+  DELIVERY_UPDATE
+  PAYMENT_UPDATE
+  SYSTEM_ALERT
+  PROMOTION
 }

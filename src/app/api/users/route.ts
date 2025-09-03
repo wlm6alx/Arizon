@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hasPermission, isAdmin } from '@/lib/rbac'
@@ -6,8 +7,7 @@ import {
   corsMiddleware, 
   authMiddleware,
   createSuccessResponse,
-  createErrorResponse,
-  validateMethod
+  createErrorResponse
 } from '@/lib/middleware'
 
 async function handleGetUsers(request: NextRequest) {

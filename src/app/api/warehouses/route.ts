@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { 
   withMiddleware, 
@@ -53,7 +54,7 @@ async function handleGetWarehouses(request: NextRequest) {
     
     // Only admin, business, stock_manager, and command_manager can view warehouses
     const hasPermission = roleTypes.some(type => 
-      ['ADMIN', 'BUSINESS', 'STOCK_MANAGER', 'COMMAND_MANAGER'].includes(type)
+      ['ADMIN', 'BUSINESS', 'STOCK_MANAGER', 'COMMAND_MANAGER', 'CLIENT'].includes(type)
     )
 
     if (!hasPermission) {
