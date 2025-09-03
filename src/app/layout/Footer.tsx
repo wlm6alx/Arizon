@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-
+import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="w-full border-t border-gray-300 bg-white px-4 py-3
@@ -11,13 +11,13 @@ export default function Footer() {
       <div className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2 mb-2 sm:mb-0">
         <span>© 2025 AriZon, Inc.</span>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Terms</a>
+        <Link href="/ProductsList" className="hover:underline">Terms</Link>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Sitemap</a>
+        <Link href="#" className="hover:underline">Sitemap</Link>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Privacy</a>
+        <Link href="#" className="hover:underline">Privacy</Link>
         <span className="hidden sm:inline">·</span>
-        <a href="#" className="hover:underline">Your Privacy Choices</a>
+        <Link href="#" className="hover:underline">Your Privacy Choices</Link>
         <Image 
           src="ChekBoxFooter.svg" 
           alt="privacy icon"
@@ -46,9 +46,9 @@ export default function Footer() {
           </button>
           {/* Menu déroulant */}
           <div className="absolute bottom-10 right-0 mt-2 hidden group-hover:block bg-white border rounded shadow-md w-48 text-gray-700 z-50">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Aide</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Centre support</a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Contact</a>
+            <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Aide</Link>
+            <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Centre support</Link>
+            <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Contact</Link>
           </div>
         </div>
       </div>
