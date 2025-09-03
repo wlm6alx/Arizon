@@ -13,7 +13,7 @@ export default function Footer() {
         <span className="hidden sm:inline">·</span>
         <Link href="/ProductsList" className="hover:underline">Terms</Link>
         <span className="hidden sm:inline">·</span>
-        <Link href="#" className="hover:underline">Sitemap</Link>
+        <Link href="/Historique" className="hover:underline">Sitemap</Link>
         <span className="hidden sm:inline">·</span>
         <Link href="#" className="hover:underline">Privacy</Link>
         <span className="hidden sm:inline">·</span>
