@@ -20,6 +20,7 @@
     "seed:clean": "tsx src/scripts/seed-clean.ts"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.13.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-label": "^2.1.7",

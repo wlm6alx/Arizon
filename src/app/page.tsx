@@ -1,134 +1,117 @@
-import { Leaf, ArrowRight, Users, Package, Truck, BarChart3 } from "lucide-react"
-import Link from "next/link"
+import Image from "next/image";
+import Link from "next/link";
+import TextType from "@/components/TextType";
 
-export default function RootPage() {
+export default function Home() {
+  const handleAnimationComplete = () => {
+  console.log('All letters have animated!');
+};
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
-            La révolution agricole
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">
-              {" "}numérique
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Connectez producteurs et consommateurs sur une plateforme intelligente qui transforme 
-            l&apos;agriculture moderne. Gestion simplifiée, traçabilité complète, avenir durable.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/signup"
-              className="green-gradient text-white px-8 py-4 rounded-lg text-lg font-semibold hover:opacity-90 transition-all duration-200 green-shadow inline-flex items-center gap-2"
-            >
-              Commencer gratuitement
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link 
-              href="/login"
-              className="border-2 border-green-600 text-green-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-50 transition-all duration-200"
-            >
-              Se connecter
-            </Link>
-          </div>
-        </div>
-      </section>
+    <>
+      <section className="relative h-screen w-full">
+        <Image
+          src={"/Back.jpg"}
+          alt="Background image"
+          fill
+          className="object-cover"
+        />
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-              Fonctionnalités principales
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Tout ce dont vous avez besoin pour gérer votre activité agricole en toute simplicité
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Gestion des utilisateurs</h3>
-              <p className="text-gray-600">
-                Gérez facilement vos clients, fournisseurs et équipes avec des rôles et permissions personnalisables.
-              </p>
-            </div>
+        <div className="relative z-10 items-center flex flex-col h-full justify-between  ">
+          <header className="flex justify-between items-center px-8 py-4 text-sm space-x-10 ">
             
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <Package className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Catalogue de produits</h3>
-              <p className="text-gray-600">
-                Créez et gérez votre catalogue de produits avec des images, descriptions et prix détaillés.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <Truck className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Suivi des commandes</h3>
-              <p className="text-gray-600">
-                Suivez vos commandes en temps réel, de la réception à la livraison finale.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <BarChart3 className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Analyses et rapports</h3>
-              <p className="text-gray-600">
-                Obtenez des insights précieux sur vos performances et prenez des décisions éclairées.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <Leaf className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Agriculture durable</h3>
-              <p className="text-gray-600">
-                Contribuez à une agriculture plus durable avec nos outils de traçabilité et de certification.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="green-gradient w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 green-shadow">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Communauté active</h3>
-              <p className="text-gray-600">
-                Rejoignez une communauté d&apos;agriculteurs passionnés et partagez vos expériences.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+            {/* Réseaux sociaux */}
+            <div className="flex items-center gap-4">
+              <Link href={"/"} className="group bg-white rounded-full p-2 transition duration-300 ease-out hover:bg-green-400">
+                <Image src={"/icons_x.svg"} alt="X" width={30} height={30} 
+                className="transition-transform duration-300 ease-out group-hover:scale-130"/>
+              </Link>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            Prêt à transformer votre agriculture ?
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Rejoignez des milliers d&apos;agriculteurs qui ont déjà fait le choix de l&apos;innovation.
-          </p>
-          <Link 
-            href="/signup"
-            className="green-gradient text-white px-8 py-4 rounded-lg text-lg font-semibold hover:opacity-90 transition-all duration-200 green-shadow inline-flex items-center gap-2"
-          >
-            Créer mon compte gratuitement
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+              <Link href={"/"} className="group bg-white rounded-full p-2 transition duration-300 ease-out hover:bg-green-400">
+                <Image src={"/icons_facebook.svg"} alt="Facebook" width={30} height={30}
+                 className="transition-transform duration-300 ease-out group-hover:scale-130"/>
+              </Link>
+
+              <Link href={"/"} className="group bg-white rounded-full p-2 transition duration-300 ease-out hover:bg-green-400">
+                <Image src={"/icons_pinterest.svg"} alt="Pinterest" width={30} height={30}
+                className="transition-transform duration-300 ease-out group-hover:scale-130" />
+              </Link>
+
+              <Link href={"/"} className="group bg-white rounded-full p-2 transition duration-300 ease-out hover:bg-green-400">
+                <Image src={"/icons_instagram.svg"} alt="Instagram" width={30} height={30} 
+                className="transition-transform duration-300 ease-out group-hover:scale-130"/>
+              </Link>
+            </div>
+
+            {/* Contacts */}
+            <div className="flex items-center gap-6">
+              <div className="text-black">
+                <p>call anytime</p>
+                <p>+98 (000)-9630</p>
+              </div>
+
+              {/* Séparateur */}
+              <span className="rotate-90 w-10 h-0.5 bg-black"></span>
+
+              <div className="text-black">
+                <p>send mail</p>
+                <p>ambed@agrios.com</p>
+              </div>
+            </div>
+          </header>
+          {/*Souhait de bienvenue*/}
+              <div className="relative bottom-20 right-80 text-center text-blue-900 mb-48">
+             <TextType 
+  text={["BIENVENUE SUR", "WELCOME TO"]}
+  typingSpeed={75}
+  pauseDuration={1500}
+  className="text-5xl font-bold"
+  showCursor={false}
+  cursorCharacter="|"
+/>   
+                <Image
+src={"/ArizonHero.svg"}
+alt ="logo Arizon"
+width={400}
+height={200}
+/> 
+              </div>
         </div>
       </section>
-    </div>
-  )
+      <div className="bg-[#1F4E3D] flex w-full"> 
+<div className="size-1/3 text-white grow-3 text-center p-5 justify-center">
+  <p>
+    Call anytime 
+  </p>
+  <p>
+    +4733378901
+  </p>
+</div>
+<span className="w-0.5 h-16 bg-white self-center mx-2"></span>
+
+  <div className="size-1/3 text-white grow-3 items-center p-5 justify-center">
+  <Image 
+  src={"/AriZonLink.svg"}
+  alt="Lien Arizon"
+  width={176}
+  height={71}
+  className="mx-auto"
+  />
+  </div>
+
+  <span className="w-0.5 h-16 bg-white self-center mx-2"></span>
+
+
+  <div className="size-1/3 text-white grow-3 text-center p-5 justify-center">
+    <p>
+    Email
+  </p>
+  <p>
+    ambed@agrios.com
+  </p>
+  </div>
+
+      </div>
+    </>
+  );
 }

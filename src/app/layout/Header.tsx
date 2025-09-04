@@ -6,18 +6,40 @@ export default function Header() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
+  // 👤 Etat utilisateur récupéré via API
+  const [user, setUser] = useState<{ name: string } | null>(null);
+
   const menuRef = useRef<HTMLDivElement | null>(null);
   const LangueRef = useRef<HTMLDivElement | null>(null);
+
+  // Fonction d’appel API
+  const fetchUser = async () => {
+    try {
+      const res = await fetch("https://api.vercel.app/user"); // 👉 mets l’URL de ton API
+      if (!res.ok) throw new Error("Erreur lors du fetch user");
+      const data = await res.json();
+
+      // Suppose que l’API retourne un objet { name: "Dauphin Dongmo" }
+      setUser(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Appel API quand le composant est monté
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   // Gestion ouverture/fermeture
   const toggleLang = () => {
     setIsLangOpen(!isLangOpen);
-    setOpen(false); // ferme le menu si ouvert
+    setOpen(false);
   };
 
   const toggleMenu = () => {
     setOpen(!open);
-    setIsLangOpen(false); // ferme la langue si ouverte
+    setIsLangOpen(false);
   };
 
   // Fermer si clic en dehors
@@ -70,13 +92,8 @@ export default function Header() {
       {/* Sélecteur de langue + hamburger */}
       <div className="flex items-center space-x-4 relative">
         {/* Langue */}
-        <div ref={LangueRef} className="hidden sm:flex items-center ">
-          <button 
-            onClick={toggleLang} 
-            className="items-center"
-            title="Sélectionner la langue"
-            aria-label="Sélectionner la langue"
-          >
+        <div ref={LangueRef} className="flex items-center">
+          <button onClick={toggleLang} className="items-center">
             <Image
               alt="Selection de la langue"
               src="../globeMonde.svg"
@@ -131,11 +148,15 @@ export default function Header() {
               {/* Avatar + nom */}
               <div className="flex flex-col items-center">
                 <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">D</span>
+                  <span className="text-white text-2xl font-bold">
+                    {user ? user.name.charAt(0).toUpperCase() : "?"}
+                  </span>
                 </div>
-                <h2 className="mt-2 text-lg font-semibold">Dauphin Dongmo</h2>
+                <h2 className="mt-2 text-lg font-semibold">
+                  {user ? user.name : "Chargement..."}
+                </h2>
 
-                <button className="mt-2 text-gray-700 py-2 px-6 rounded-full border-1 border-black hover:bg-gray-200 flex items-center gap-2">
+                <button className="mt-2 text-gray-700 py-2 px-6 rounded hover:bg-gray-200 flex items-center gap-2">
                   <Image
                     alt="profile icon"
                     src="../Profile.svg"
@@ -148,7 +169,7 @@ export default function Header() {
 
               {/* Séparateur */}
               <div className="flex justify-center my-3">
-                <span className="block w-4/5 h-0.5 my-1 bg-gray-300"></span>
+                <span className="block w-4/5 h-0.5 bg-gray-300"></span>
               </div>
 
               {/* Liens */}
@@ -175,3 +196,4 @@ export default function Header() {
     </header>
   );
 }
+ 
