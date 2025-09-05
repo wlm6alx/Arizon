@@ -85,7 +85,7 @@ export default function Historique() {
             </thead>
             <tbody>
               {/* Exemple de ligne, à remplacer par un .map sur Produit */}
-              <tr className="hover:bg-green-50 transition">
+              <tr className="hover:bg-green-50 transition text-center">
                 <td className="px-4 py-2 border-b">Bonjour</td>
                 <td className="px-4 py-2 border-b">-</td>
                 <td className="px-4 py-2 border-b">-</td>

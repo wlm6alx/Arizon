@@ -15,7 +15,7 @@ export default function Header() {
   // Fonction d’appel API
   const fetchUser = async () => {
     try {
-      const res = await fetch("https://api.vercel.app/user"); // 👉 mets l’URL de ton API
+      const res = await fetch("api/auth/login"); // 👉 mets l’URL de ton API
       if (!res.ok) throw new Error("Erreur lors du fetch user");
       const data = await res.json();
 
@@ -149,11 +149,11 @@ export default function Header() {
               <div className="flex flex-col items-center">
                 <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
                   <span className="text-white text-2xl font-bold">
-                    {user ? user.name.charAt(0).toUpperCase() : "?"}
+                    {user ? user.username.charAt(0).toUpperCase() : "?"}
                   </span>
                 </div>
                 <h2 className="mt-2 text-lg font-semibold">
-                  {user ? user.name : "Chargement..."}
+                  {user ? user.username : "Chargement..."}
                 </h2>
 
                 <button className="mt-2 text-gray-700 py-2 px-6 rounded hover:bg-gray-200 flex items-center gap-2">

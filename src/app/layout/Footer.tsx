@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2 mb-2 sm:mb-0">
         <span>© 2025 AriZon, Inc.</span>
         <span className="hidden sm:inline">·</span>
-        <Link href="/ProductsList" className="hover:underline">Terms</Link>
+        <Link href="/product_list" className="hover:underline">Terms</Link>
         <span className="hidden sm:inline">·</span>
         <Link href="/Historique" className="hover:underline">Sitemap</Link>
         <span className="hidden sm:inline">·</span>
