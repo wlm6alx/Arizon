@@ -157,7 +157,8 @@ pauseBetweenAnimations={1}
         )}
 
         {/* Bulle panier visible partout */}
-        <CartBubble />
+    <Link href="/panier" className="hover:underline"><CartBubble /></Link>
+        
       </div>
     </>
   );

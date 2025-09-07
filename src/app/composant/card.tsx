@@ -1,5 +1,5 @@
 // components/CartBubble.jsx
-import { ShoppingCart } from "lucide-react"; // icône sympa
+import { ShoppingCart } from "lucide-react"; 
 
 export default function CartBubble() {
   return (
