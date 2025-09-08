@@ -135,7 +135,7 @@ export default function ProductsList() {
                 </div>
                 <div className="mt-4">
                   <button
-                    onClick={() => fetchProducts}
+                    onClick={() => fetchProducts(currentPage)}
                     className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     Réessayer
