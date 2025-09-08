@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
+import { encrypt, decrypt } from '@/lib/secure-cookie'
 
 export interface User {
   id: string
@@ -46,18 +48,23 @@ export function useAuth() {
   const [error, setError] = useState<AuthError | null>(null)
   const router = useRouter()
 
-  // Initialize auth state from localStorage
+  // Initialize auth state from cookies and localStorage
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        const token = localStorage.getItem('auth_token')
+        // Try to get token from encrypted cookie first
+        const cookieToken = Cookies.get('token')
+        const token = cookieToken ? decrypt(cookieToken) : null
+        
+        // Fallback to localStorage
+        const localStorageToken = token || localStorage.getItem('auth_token')
         const userStr = localStorage.getItem('auth_user')
         
-        if (token && userStr) {
+        if (localStorageToken && userStr) {
           const user = JSON.parse(userStr) as User
           setAuthState({
             user,
-            token,
+            token: localStorageToken,
             isLoading: false,
             isAuthenticated: true,
           })
@@ -101,7 +108,14 @@ export function useAuth() {
 
       const { user, token } = data.data
 
-      // Store in localStorage
+      // Store in both encrypted cookie and localStorage
+      const encryptedToken = encrypt(token)
+      Cookies.set('token', encryptedToken, {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        expires: 7 // 7 days
+      })
+      
       localStorage.setItem('auth_token', token)
       localStorage.setItem('auth_user', JSON.stringify(user))
 
@@ -149,7 +163,14 @@ export function useAuth() {
 
       const { user, token } = data.data
 
-      // Store in localStorage
+      // Store in both encrypted cookie and localStorage
+      const encryptedToken = encrypt(token)
+      Cookies.set('token', encryptedToken, {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        expires: 7 // 7 days
+      })
+      
       localStorage.setItem('auth_token', token)
       localStorage.setItem('auth_user', JSON.stringify(user))
 
@@ -184,9 +205,10 @@ export function useAuth() {
     } catch (err) {
       console.error('Logout error:', err)
     } finally {
-      // Clear localStorage and state
+      // Clear both localStorage and cookies
       localStorage.removeItem('auth_token')
       localStorage.removeItem('auth_user')
+      Cookies.remove('token')
       
       setAuthState({
         user: null,

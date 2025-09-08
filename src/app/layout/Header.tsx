@@ -1,35 +1,21 @@
 "use client";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [open, setOpen] = useState(false);
-
-  // 👤 Etat utilisateur récupéré via API
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  
+  // Hooks for user data and authentication
+  const { user } = useUserProfile();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   const menuRef = useRef<HTMLDivElement | null>(null);
   const LangueRef = useRef<HTMLDivElement | null>(null);
-
-  // Fonction d’appel API
-  const fetchUser = async () => {
-    try {
-      const res = await fetch("api/auth/login"); // 👉 mets l’URL de ton API
-      if (!res.ok) throw new Error("Erreur lors du fetch user");
-      const data = await res.json();
-
-      // Suppose que l’API retourne un objet { name: "Dauphin Dongmo" }
-      setUser(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Appel API quand le composant est monté
-  useEffect(() => {
-    fetchUser();
-  }, []);
 
   // Gestion ouverture/fermeture
   const toggleLang = () => {
@@ -40,6 +26,41 @@ export default function Header() {
   const toggleMenu = () => {
     setOpen(!open);
     setIsLangOpen(false);
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setOpen(false);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // Get user display name
+  const getUserDisplayName = () => {
+    if (!user) return "Chargement...";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    if (user.username) {
+      return user.username;
+    }
+    return user.email;
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user) return "?";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+    }
+    if (user.username) {
+      return user.username.charAt(0).toUpperCase();
+    }
+    return user.email.charAt(0).toUpperCase();
   };
 
   // Fermer si clic en dehors
@@ -93,7 +114,12 @@ export default function Header() {
       <div className="flex items-center space-x-4 relative">
         {/* Langue */}
         <div ref={LangueRef} className="flex items-center">
-          <button onClick={toggleLang} className="items-center">
+          <button 
+            onClick={toggleLang} 
+            className="items-center"
+            title="Changer de langue"
+            aria-label="Changer de langue"
+          >
             <Image
               alt="Selection de la langue"
               src="../globeMonde.svg"
@@ -104,11 +130,19 @@ export default function Header() {
           {isLangOpen && (
             <div className="absolute top-8 right-8 border-2 border-black rounded w-32 bg-gray-300 shadow-md">
               <div className="flex flex-col items-center">
-                <button className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded"
+                  title="Sélectionner le français"
+                  aria-label="Sélectionner le français"
+                >
                   Français
                 </button>
                 <span className="block w-2/5 h-0.5 bg-gray-300 my-1"></span>
-                <button className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded"
+                  title="Sélectionner l'anglais"
+                  aria-label="Sélectionner l'anglais"
+                >
                   Anglais
                 </button>
               </div>
@@ -147,16 +181,36 @@ export default function Header() {
             <div className="absolute top-14 right-0 shadow-lg rounded-lg w-72 bg-white py-4 z-50 transition-all duration-300 ease-in-out">
               {/* Avatar + nom */}
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
-                    {user ? user.username.charAt(0).toUpperCase() : "?"}
-                  </span>
-                </div>
-                <h2 className="mt-2 text-lg font-semibold">
-                  {user ? user.username : "Chargement..."}
+                {user?.avatar ? (
+                  <Image
+                    src={user.avatar}
+                    alt="Profile"
+                    width={80}
+                    height={80}
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-2xl font-bold">
+                      {getUserInitials()}
+                    </span>
+                  </div>
+                )}
+                
+                <h2 className="mt-2 text-lg font-semibold text-center px-4">
+                  {getUserDisplayName()}
                 </h2>
+                
+                {user?.email && (
+                  <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+                )}
 
-                <button className="mt-2 text-gray-700 py-2 px-6 rounded hover:bg-gray-200 flex items-center gap-2">
+                <button 
+                  onClick={() => router.push('/profile')}
+                  className="mt-2 text-gray-700 py-2 px-6 rounded hover:bg-gray-200 flex items-center gap-2"
+                  title="Voir le profil"
+                  aria-label="Voir le profil"
+                >
                   <Image
                     alt="profile icon"
                     src="../Profile.svg"
@@ -174,18 +228,31 @@ export default function Header() {
 
               {/* Liens */}
               <div className="flex flex-col items-center">
-                <button className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded"
+                  title="Voir mes commandes"
+                  aria-label="Voir mes commandes"
+                >
                   Mes commandes
                 </button>
                 <span className="block w-2/5 h-0.5 bg-gray-300 my-1"></span>
-                <button className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="w-full text-gray-700 py-2 hover:bg-gray-100 rounded"
+                  title="Personnaliser mon compte"
+                  aria-label="Personnaliser mon compte"
+                >
                   Personnalisation
                 </button>
               </div>
 
               {/* Déconnexion */}
               <div className="mt-4 text-center">
-                <button className="bg-red-600 text-white py-2 px-6 rounded hover:bg-red-700">
+                <button 
+                  onClick={handleLogout}
+                  className="bg-red-600 text-white py-2 px-6 rounded hover:bg-red-700 transition-colors"
+                  title="Se déconnecter du compte"
+                  aria-label="Se déconnecter du compte"
+                >
                   Se déconnecter
                 </button>
               </div>

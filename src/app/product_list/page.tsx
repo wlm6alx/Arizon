@@ -3,58 +3,58 @@
 import TrueFocus from "@/components/TrueFocus";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "../layout/Header";
 import CartBubble from "../composant/card";
 import { Loader2Icon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import useProduits from "../hooks/produits";
 
 // ✅ Définition du type Product selon ton API
 type Product = {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   unit: string;
-  imageUrl: string;
-  category: {
+  imageUrl: string | null;
+  categoryId: string | null;
+  category?: {
     id: string;
     name: string;
   };
-  _count: {
+  _count?: {
     stocks: number;
     orderItems: number;
   };
 };
 
 export default function ProductsList() {
+  const { getAll } = useProduits();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // ✅ Fonction pour récupérer les produits
-  const fetchProducts = async () => {
+  // ✅ Fonction pour récupérer les produits avec le hook
+  const fetchProducts = useCallback(async () => {
     try {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-
-      console.log("API response:", data);
-
-      // ⚡ Corrigé : on cible directement le tableau products
-      if (data?.data?.products) {
-        setProducts(data.data.products);
-      } else {
-        setProducts([]);
-      }
-    } catch (error) {
-      console.error("Erreur API :", error);
-      setProducts([]); // fallback si erreur
+      setLoading(true);
+      setError(null);
+      const data = await getAll();
+      console.log("Data:", data);
+      setProducts(data);
+      console.log("Products:", products);
+    } catch (err) {
+      console.error("Erreur API :", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch products");
+      setProducts([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAll, products]);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   // ✅ Exemple de liste de catégories
   const categories = [
@@ -103,57 +103,111 @@ export default function ProductsList() {
 
       {/* Section Produits */}
       <div className="p-6">
+        {/* Loading State */}
         {loading ? (
-          <p className="text-center">
+          <div className="flex justify-center items-center py-12">
             <Button size="sm" disabled>
-               <Loader2Icon className="animate-spin" />
-      Please wait
-             </Button>
-    </p>
-        ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-xl shadow hover:shadow-lg transition p-2"
-              >
-                <Image
-                  src={product.imageUrl || "/fallback.jpg"} // ✅ fallback si vide
-                  alt={product.name}
-                  width={300}
-                  height={200}
-                  className="rounded-lg object-cover w-full h-40"
-                />
-
-                <div className="mt-2">
-                  <h3 className="font-semibold">{product.name}</h3>
-                  <p className="text-gray-500 text-sm">{product.description}</p>
-                  <p className="text-gray-400 text-xs">
-                    stocks {product._count.stocks}
-                  </p>
-
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="font-bold">{product.unit}</span>
-                    <span className="text-yellow-500 text-sm">
-                      ★ {product.category.name}
-                    </span>
-                  </div>
+              <Loader2Icon className="animate-spin mr-2" />
+              Chargement des produits...
+            </Button>
+          </div>
+        ) : error ? (
+          /* Error State */
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Erreur lors du chargement des produits</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={fetchProducts}
+                    className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    Réessayer
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        ) : (
-          <div className = "m-auto">
-          <TrueFocus 
-sentence="Aucun produit disponible pour le moment !"
-manualMode={false}
-blurAmount={5}
-borderColor="green"
-animationDuration={2}
-pauseBetweenAnimations={1}
-/>
-          </div>
+        ) : products.length > 0 ? (
+          /* Products Grid */
+          <>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Tous les Produits</h2>
+              <p className="text-gray-600 mt-1">{products.length} produits disponibles</p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-xl shadow hover:shadow-lg transition-all duration-200 p-4 border border-gray-100"
+                >
+                  {product.imageUrl ? (
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.name}
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover w-full h-40 mb-3"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                      <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
 
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-gray-900 text-lg">{product.name}</h3>
+                    
+                    {product.description && (
+                      <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                    )}
+                    
+                    {product.category && (
+                      <div className="flex items-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {product.category.name}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-sm text-gray-500">Unité: {product.unit}</span>
+                      {product._count && (
+                        <div className="flex space-x-2 text-xs text-gray-400">
+                          <span>{product._count.stocks} stocks</span>
+                          <span>•</span>
+                          <span>{product._count.orderItems} commandes</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Empty State */
+          <div className="m-auto">
+            <TrueFocus 
+              sentence="Aucun produit disponible pour le moment !"
+              manualMode={false}
+              blurAmount={5}
+              borderColor="green"
+              animationDuration={2}
+              pauseBetweenAnimations={1}
+            />
+          </div>
         )}
 
         {/* Bulle panier visible partout */}
