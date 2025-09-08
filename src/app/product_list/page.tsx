@@ -29,20 +29,28 @@ type Product = {
 };
 
 export default function ProductsList() {
-  const { getAll } = useProduits();
+  const { getAllWithPagination } = useProduits();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    pages: 0
+  });
 
-  // ✅ Fonction pour récupérer les produits avec le hook
-  const fetchProducts = useCallback(async () => {
+  // ✅ Fonction pour récupérer les produits avec pagination
+  const fetchProducts = useCallback(async (page: number = 1) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAll();
-      console.log("Data:", data);
-      setProducts(data);
-      console.log("Products:", products);
+      const result = await getAllWithPagination({ page: page.toString(), limit: '20' });
+      console.log("Data:", result);
+      setProducts(result.data);
+      setPagination(result.pagination);
+      setCurrentPage(page);
     } catch (err) {
       console.error("Erreur API :", err);
       setError(err instanceof Error ? err.message : "Failed to fetch products");
@@ -50,7 +58,7 @@ export default function ProductsList() {
     } finally {
       setLoading(false);
     }
-  }, [getAll, products]);
+  }, [getAllWithPagination]);
 
   useEffect(() => {
     fetchProducts();
@@ -127,7 +135,7 @@ export default function ProductsList() {
                 </div>
                 <div className="mt-4">
                   <button
-                    onClick={fetchProducts}
+                    onClick={() => fetchProducts}
                     className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     Réessayer
@@ -194,6 +202,53 @@ export default function ProductsList() {
                   </div>
                 </div>
               ))}
+            </div>
+            
+            {/* Pagination Controls */}
+            {pagination.pages > 1 && (
+              <div className="mt-8 flex justify-center items-center space-x-4">
+                <button
+                  onClick={() => fetchProducts(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Précédent
+                </button>
+                
+                <div className="flex space-x-2">
+                  {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                    const pageNum = Math.max(1, Math.min(pagination.pages - 4, currentPage - 2)) + i;
+                    if (pageNum > pagination.pages) return null;
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => fetchProducts(pageNum)}
+                        className={`px-3 py-2 rounded-lg transition-colors ${
+                          currentPage === pageNum
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <button
+                  onClick={() => fetchProducts(currentPage + 1)}
+                  disabled={currentPage >= pagination.pages}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Suivant
+                </button>
+              </div>
+            )}
+            
+            {/* Pagination Info */}
+            <div className="mt-4 text-center text-sm text-gray-600">
+              Page {pagination.page} sur {pagination.pages} • {pagination.total} produits au total
             </div>
           </>
         ) : (
