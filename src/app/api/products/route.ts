@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { 
   withMiddleware, 
@@ -44,6 +44,7 @@ async function handleGetProducts(request: NextRequest) {
     // Get query parameters for filtering
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get('categoryId')
+    const category = searchParams.get('category') // Filter by category name
     const search = searchParams.get('search')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100)
@@ -53,6 +54,15 @@ async function handleGetProducts(request: NextRequest) {
     const where: any = {}
     if (categoryId) {
       where.categoryId = categoryId
+    }
+    if (category) {
+      // Filter by category name - need to join with ProductCategory table
+      where.category = {
+        name: {
+          contains: category,
+          mode: 'insensitive'
+        }
+      }
     }
     if (search) {
       where.OR = [
