@@ -1,8 +1,8 @@
 "use client";
-
 import TrueFocus from "@/components/TrueFocus";
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 import { useEffect, useState, useCallback } from "react";
 import Header from "../layout/Header";
 import CartBubble from "../composant/card";
@@ -28,7 +28,9 @@ type Product = {
   };
 };
 
+
 export default function ProductsList() {
+  // const fetchRef = useRef<((page?: number) => void) | null>(null);
   const { getAllWithPagination } = useProduits();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,31 @@ export default function ProductsList() {
     total: 0,
     pages: 0
   });
-
+  const [selectedCategory, setSelectedCategory] = useState<string | null>("tous");
   // ✅ Fonction pour récupérer les produits avec pagination
-  const fetchProducts = useCallback(async (page: number = 1) => {
+
+  const fetchProducts = useCallback(async (page: number = 1, categoryName : string | null) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params: Record<string, string> = { page: page.toString(), limit: '30' };
+    if (categoryName && categoryName !== "tous") params.category = categoryName;
+      const result = await getAllWithPagination(params);
+      console.log("Data:", result);
+      setProducts(result.data);
+      setPagination(result.pagination);
+      setCurrentPage(page);
+    } catch (err) {
+      console.error("Erreur API :", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch products");
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [getAllWithPagination]);
+/*
+  useEffect(() => {
+  fetchRef.current = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -58,23 +82,32 @@ export default function ProductsList() {
     } finally {
       setLoading(false);
     }
-  }, [getAllWithPagination]);
+  };
+}, [getAllWithPagination]);
+*//*
+useEffect(() => {
+  if (fetchRef.current) {
+    fetchRef.current(currentPage);
+  }
+}, [currentPage]);*/
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+useEffect(() => {
+  fetchProducts(1, selectedCategory);
+}, [selectedCategory]);
 
-  // ✅ Exemple de liste de catégories
+
+  // liste de catégories
   const categories = [
-    { name: "Céréales et grains", icon: "/CerealesEtGrain.svg", href: "/categories/cereales", active: true },
-    { name: "Légumineuse", icon: "/Legumineuse.svg", href: "/categories/legumineuse" },
-    { name: "Fruits frais", icon: "/FruitsFrais.svg", href: "/categories/fruits" },
-    { name: "Légumes frais", icon: "/LegumesFrais.svg", href: "/categories/legumes" },
-    { name: "Racines et tubercules", icon: "/RacineEtTubercule.svg", href: "/categories/racines" },
-    { name: "Oléagineux", icon: "/Olaegineux.svg", href: "/categories/oleagineux" },
-    { name: "Épices et condiments", icon: "/EpicesEtCondiments.svg", href: "/categories/epices" },
-    { name: "Semences", icon: "/semences.svg", href: "/categories/semences" },
-    { name: "Produits laitiers", icon: "/ProduitsLaitier.svg", href: "/categories/laitiers" },
+    { name: "Tous", icon: "/Allproducts.svg", categoryName: "Tous" },
+    { name: "Céréales et grains", icon: "/CerealesEtGrain.svg", categoryName: "cereales" },
+    { name: "Légumineuse", icon: "/Legumineuse.svg", categoryName: "legumineuse" },
+    { name: "Fruits frais", icon: "/FruitsFrais.svg", categoryName: "fruits" },
+    { name: "Légumes frais", icon: "/LegumesFrais.svg", categoryName: "legumes" },
+    { name: "Racines et tubercules", icon: "/RacineEtTubercule.svg", categoryName: "racines" },
+    { name: "Oléagineux", icon: "/Olaegineux.svg", categoryName: "oleagineux" },
+    { name: "Épices et condiments", icon: "/EpicesEtCondiments.svg", categoryName: "epices" },
+    { name: "Semences", icon: "/semences.svg", categoryName: "semences" },
+    { name: "Produits laitiers", icon: "/ProduitsLaitier.svg", categoryName: "laitiers" },
   ];
 
   return (
@@ -82,32 +115,32 @@ export default function ProductsList() {
       <Header />
 
       {/* Navigation catégories */}
-      <div className="flex items-center justify-center w-full mt-6">
-        <div className="flex gap-10">
-          {categories.map((cat) => (
-            <Link key={cat.name} href={cat.href}>
-              <div className="flex flex-col items-center cursor-pointer group">
-                <Image
-                  src={cat.icon}
-                  alt={cat.name}
-                  width={28}
-                  height={28}
-                  className="mb-1"
-                />
-                <span
-                  className={`text-sm ${
-                    cat.active
-                      ? "font-medium border-b-2 border-black"
-                      : "text-gray-500 group-hover:text-black"
-                  }`}
-                >
-                  {cat.name}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+
+      <div className="w-full mt-6">
+  <div className="flex gap-4 overflow-x-auto px-2 sm:justify-center">
+    {categories.map((cat) => (
+      <button
+        key={cat.name}
+        onClick={() => {
+          setSelectedCategory(cat.categoryName || "all");
+          fetchProducts(1, cat.categoryName || null);
+        }}
+        className={`flex flex-col items-center min-w-[80px] px-2 py-1 cursor-pointer group focus:outline-none
+          ${selectedCategory === (cat.categoryName || "all") ? "font-medium border-b-2 border-green-600 bg-green-50" : "text-gray-500 group-hover:text-black"}
+        `}
+      >
+        <Image
+          src={cat.icon}
+          alt={cat.name}
+          width={28}
+          height={28}
+          className="mb-1"
+        />
+        <span className="text-xs sm:text-sm">{cat.name}</span>
+      </button>
+    ))}
+  </div>
+</div>
 
       {/* Section Produits */}
       <div className="p-6">
@@ -135,7 +168,7 @@ export default function ProductsList() {
                 </div>
                 <div className="mt-4">
                   <button
-                    onClick={() => fetchProducts(currentPage)}
+                    onClick={() => fetchProducts(currentPage, selectedCategory)}
                     className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     Réessayer
@@ -208,7 +241,7 @@ export default function ProductsList() {
             {pagination.pages > 1 && (
               <div className="mt-8 flex justify-center items-center space-x-4">
                 <button
-                  onClick={() => fetchProducts(currentPage - 1)}
+                  onClick={() => fetchProducts(currentPage - 1, selectedCategory)}
                   disabled={currentPage <= 1}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
@@ -223,7 +256,7 @@ export default function ProductsList() {
                     return (
                       <button
                         key={pageNum}
-                        onClick={() => fetchProducts(pageNum)}
+                        onClick={() => fetchProducts(pageNum, selectedCategory)}
                         className={`px-3 py-2 rounded-lg transition-colors ${
                           currentPage === pageNum
                             ? 'bg-green-600 text-white'
@@ -237,7 +270,7 @@ export default function ProductsList() {
                 </div>
                 
                 <button
-                  onClick={() => fetchProducts(currentPage + 1)}
+                  onClick={() => fetchProducts(currentPage + 1, selectedCategory)}
                   disabled={currentPage >= pagination.pages}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
